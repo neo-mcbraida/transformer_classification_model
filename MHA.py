@@ -3,6 +3,7 @@ import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
 
+
 def scaled_dot_product_attention(q, k, v, mask):
     """Calculate the attention weights.
     q, k, v must have matching leading dimensions.
@@ -21,7 +22,8 @@ def scaled_dot_product_attention(q, k, v, mask):
         output, attention_weights
     """
 
-    matmul_qk = tf.matmul(q, k, transpose_b=True)  # (..., seq_len_q, seq_len_k)
+    # (..., seq_len_q, seq_len_k)
+    matmul_qk = tf.matmul(q, k, transpose_b=True)
 
     # scale matmul_qk
     dk = tf.cast(tf.shape(k)[-1], tf.float32)
@@ -33,17 +35,19 @@ def scaled_dot_product_attention(q, k, v, mask):
 
     # softmax is normalized on the last axis (seq_len_k) so that the scores
     # add up to 1.
-    attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1)  # (..., seq_len_q, seq_len_k)
+    attention_weights = tf.nn.softmax(
+        scaled_attention_logits, axis=-1)  # (..., seq_len_q, seq_len_k)
 
     output = tf.matmul(attention_weights, v)  # (..., seq_len_q, depth_v)
 
     return output, attention_weights
 
+
 def pointwise_feedforward(dims, dff):
     return keras.Sequential([
-            layers.Dense(dff, activation="relu"),
-            layers.Dense(dims)
-        ])
+        layers.Dense(dff, activation="relu"),
+        layers.Dense(dims)
+    ])
 
 # class MultiHeadAttention(layers.Layer):
 #     def __init__(self, dims, num_heads):
@@ -53,11 +57,11 @@ def pointwise_feedforward(dims, dff):
 #         self.num_heads = num_heads
 
 #         # tensorflow says:
-#         # Instead of one single attention head, Q, K, and V are split 
-#         # into multiple heads because it allows the model to jointly 
-#         # attend to information from different representation subspaces 
-#         # at different positions. After the split each head has a reduced 
-#         # dimensionality, so the total computation cost is the same as a single 
+#         # Instead of one single attention head, Q, K, and V are split
+#         # into multiple heads because it allows the model to jointly
+#         # attend to information from different representation subspaces
+#         # at different positions. After the split each head has a reduced
+#         # dimensionality, so the total computation cost is the same as a single
 #         # head attention with full dimensionality.
 #         assert dims % num_heads == 0
 #         self.depth = dims // num_heads # number of dims in each head
@@ -67,7 +71,7 @@ def pointwise_feedforward(dims, dff):
 #         self.wv = layers.Dense(dims)
 
 #         self.dense = layers.Dense(dims)
-    
+
 #     def split_heads(self, x, batch_size):
 #         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
 #         return x.transpose(x, perm=[0, 2, 1, 3])
@@ -87,7 +91,7 @@ def pointwise_feedforward(dims, dff):
 
 #         scaled_attention = scaled_attention.transpose(scaled_attention, (0, 2, 3, 1))
 
-        
+
 #         concat_attention = tf.reshape(scaled_attention,
 #                                     (batch_size, -1, self.d_model))  # (batch_size, seq_len_q, d_model)
 

@@ -7,6 +7,7 @@ from tensorflow.python.keras.layers.multi_head_attention import MultiHeadAttenti
 from tensorflow.python.keras.utils import layer_utils
 from MHA import *
 
+
 class EncoderLayer(layers.Layer):
     def __init__(self, dims, num_heads, dff, rate=0.1):
         super(EncoderLayer, self).__init__()
@@ -37,6 +38,7 @@ class EncoderLayer(layers.Layer):
 
         return output
 
+
 class Encoder(layers.Layer):
     def __init__(self, num_layers, dims, dff, num_heads):
         super(Encoder, self).__init__()
@@ -47,12 +49,12 @@ class Encoder(layers.Layer):
         self.num_heads = num_heads
 
         self.layers = [EncoderLayer(self.dims, self.num_heads, self.dff)
-                        for i in range(self.num_layers)]
+                       for i in range(self.num_layers)]
 
     def call(self, x, training, mask):
         # add positional encoding here
 
         for layer in self.layers:
             output = layer(x, training, mask)
-        
+
         return output
